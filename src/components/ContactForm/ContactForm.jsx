@@ -2,9 +2,8 @@ import css from './ContactForm.module.css';
 
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { nanoid } from 'nanoid';
 import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contactsOps';
 
 const ContactForm = () => {
   const dispatch = useDispatch();
@@ -22,11 +21,15 @@ const ContactForm = () => {
     number: Yup.string()
       .min(3, 'Minimum 3 characters')
       .max(50, 'Maximum 50 characters')
+      .matches(
+        /^(\+)?(?!.*--)(?!.*-$)(?!-)[\d-]+$/,
+        'Invalid phone number format'
+      )
       .required('Required'),
   });
 
   const handleSubmit = (values, { resetForm }) => {
-    const newContact = { id: nanoid(), ...values };
+    const newContact = { ...values };
     dispatch(addContact(newContact));
     resetForm();
   };
